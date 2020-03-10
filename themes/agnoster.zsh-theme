@@ -209,6 +209,14 @@ prompt_virtualenv() {
   fi
 }
 
+prompt_banzai() {
+  if [[ -n $BANZAI_CURRENT_CLUSTER_NAME ]]; then
+    prompt_segment blue white "(🌊$BANZAI_CURRENT_CLUSTER_NAME)"
+  else
+    prompt_segment blue white "(`kubectx -c`)"
+  fi
+}
+
 # Status:
 # - was there an error
 # - am I root
@@ -231,7 +239,7 @@ prompt_status() {
 prompt_aws() {
   [[ -z "$AWS_PROFILE" ]] && return
   case "$AWS_PROFILE" in
-    *-prod|*production*) prompt_segment red yellow  "AWS: $AWS_PROFILE" ;;
+    *prod|*production*) prompt_segment red yellow  "AWS: $AWS_PROFILE" ;;
     *) prompt_segment green black "AWS: $AWS_PROFILE" ;;
   esac
 }
@@ -241,6 +249,7 @@ build_prompt() {
   RETVAL=$?
   prompt_status
   prompt_virtualenv
+  prompt_banzai
   prompt_aws
   prompt_context
   prompt_dir
