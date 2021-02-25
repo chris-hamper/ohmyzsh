@@ -209,12 +209,20 @@ prompt_virtualenv() {
   fi
 }
 
-prompt_banzai() {
+prompt_k8s() {
+  local cluster_name
   if [[ -n $BANZAI_CURRENT_CLUSTER_NAME ]]; then
-    prompt_segment blue white "(🌊$BANZAI_CURRENT_CLUSTER_NAME)"
+    cluster_name="🌊$BANZAI_CURRENT_CLUSTER_NAME"
   else
-    prompt_segment blue white "(`kubectx -c`)"
+    cluster_name=`kubectx -c`
   fi
+
+  [[ -z "$cluster_name" ]] && return
+  case "$cluster_name" in
+    *prod|*production*|*gardens*) prompt_segment red yellow  "K8s: $cluster_name" ;;
+    microk8s) prompt_segment 22 white  "K8s: $cluster_name" ;; # 22 = dark green
+    *) prompt_segment blue white "K8s: $cluster_name" ;;
+  esac
 }
 
 # Status:
@@ -249,7 +257,7 @@ build_prompt() {
   RETVAL=$?
   prompt_status
   prompt_virtualenv
-  prompt_banzai
+  prompt_k8s
   prompt_aws
   prompt_context
   prompt_dir
